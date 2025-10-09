@@ -2,14 +2,14 @@
 
 import requests
 
-URL = URL = "http://127.0.0.1:5100//apiredis/ordenes"
+URL = "http://127.0.0.1:5100/apiredis/ordenes"
 
 def ordenes_test_get(dlgid=None):
     
     params = { 'unit': dlgid }
     r = requests.get(URL, params=params)
     jdr = r.json()
-    if jdr['rsp'] == "OK":
+    if r.status_code == 200:
         print("Ordenes Test GET: Response OK")
         print(f"JSON={jdr}")
         return True
@@ -23,7 +23,7 @@ def ordenes_test_put( dlgid=None, ordenes=None):
     payload = {"ordenes": ordenes }
     r = requests.put(URL, params=params, json=payload)
     jdr = r.json()
-    if jdr['rsp'] == "OK":
+    if r.status_code == 200:
         print("Ordenes Test PUT: Response OK")
         print(f"JSON={jdr}")
         return True

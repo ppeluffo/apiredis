@@ -3,7 +3,7 @@
 from flask_restful import Resource, reqparse
 from dependency_injector.wiring import inject, Provide
 from container import Container
-from servicios.pingservice import PingService
+from servicios.ping_service import PingService
 
 class PingResource(Resource):
 
@@ -18,8 +18,6 @@ class PingResource(Resource):
             
         d_rsp = self.ping_service.ping()
 
-        if d_rsp.get('rsp','ERR') == 'OK':
-            return d_rsp,200
-        else:
-            return d_rsp, 500
+        status_code = d_rsp.pop('status_code', 500)
+        return d_rsp, status_code
 

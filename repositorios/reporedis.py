@@ -51,17 +51,29 @@ class RepoRedis:
         self.logger.debug("")
         return self.datasource.get_length(qname)
          
-    def pop(self, qname=None, count=None):
+    def rpop(self, qname=None, count=None):
         """
         """
         self.logger.debug("")
-        return self.datasource.pop(qname, count)
+        return self.datasource.rpop(qname, count)
     
-    def push(self, qname=None, payload=None):
+    def lpop(self, qname=None, count=None):
         """
         """
         self.logger.debug("")
-        return self.datasource.push(qname, payload)
+        return self.datasource.lpop(qname, count)
+    
+    def rpush(self, qname=None, payload=None):
+        """
+        """
+        self.logger.debug("")
+        return self.datasource.rpush(qname, payload)
+    
+    def lpush(self, qname=None, payload=None):
+        """
+        """
+        self.logger.debug("")
+        return self.datasource.lpush(qname, payload)
     
     def get_id_from_uid(self, uid=None):
         """
@@ -87,26 +99,52 @@ class RepoRedis:
         self.logger.debug("")
         return self.datasource.set_ordenes(unit, pk_ordenes)
     
-    def get_dataline(self, unit=None):
+    def read_dataline(self, unit=None):
         """
         """
         self.logger.debug("")
-        return self.datasource.get_dataline(unit)
+        return self.datasource.read_dataline(unit)
     
-    def put_alldata(self, unit=None, pk_d_alldata=None):
+    def enqueue_dataline(self, unit=None, pk_datastruct=None):
         """
         """
         self.logger.debug("")
-        return self.datasource.put_alldata(unit, pk_d_alldata)
+        return self.datasource.enqueue_dataline(unit, pk_datastruct)
     
-    def put_dataline(self, unit=None, pk_dataline=None):
+    def dequeue_rxlines(self, count=None):
         """
         """
         self.logger.debug("")
-        return self.datasource.put_dataline(unit, pk_dataline)
+        return self.datasource.dequeue_rxlines(count)
+
+    def save_dataline(self, unit=None, pk_dataline=None):
+        """
+        """
+        self.logger.debug("")
+        return self.datasource.save_dataline(unit, pk_dataline)
     
-    def put_timestamp(self, unit=None, pk_timestamp=None):
+    def save_timestamp(self, unit=None, pk_timestamp=None):
         """
         """
         self.logger.debug("")
-        return self.datasource.put_timestamp(unit, pk_timestamp)
+        return self.datasource.save_timestamp(unit, pk_timestamp)
+    
+    def read_timestamps(self):
+        """
+        """
+        self.logger.debug("")
+        return self.datasource.read_timestamps()
+    
+    def get_ordenesplc(self, unit=None):
+        """
+        """
+        self.logger.debug("")
+        return self.datasource.get_ordenesplc( unit) 
+    
+    def set_ordenesplc(self, unit=None, pk_ordenes_plc=None):
+        """
+        """
+        self.logger.debug("")
+        return self.datasource.set_ordenesplc(unit, pk_ordenes_plc)
+    
+    

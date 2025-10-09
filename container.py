@@ -2,14 +2,16 @@
 
 from dependency_injector import containers, providers
 
-from servicios.pingservice import PingService
-from servicios.debugidservice import DebugIdService
-from servicios.deletercdservice import DeleteRcdService
-from servicios.configservice import ConfigService
-from servicios.queueservice import QueueService
-from servicios.uid2idservice import Uid2IdService
-from servicios.ordenesservice import OrdenesService
-from servicios.datalineservice import DatalineService
+from servicios.ping_service import PingService
+from servicios.debugid_service import DebugIdService
+from servicios.config_service import ConfigService
+from servicios.deletercd_service import DeleteRcdService
+from servicios.ordenes_service import OrdenesService
+from servicios.ordenesplc_service import OrdenesPlcService
+from servicios.queue_service import QueueService
+from servicios.uid2id_service import Uid2IdService
+from servicios.dataline_service import DatalineService
+from servicios.connectionstats_service import ConnectionStatsService
 
 from repositorios.reporedis import RepoRedis
 
@@ -22,20 +24,22 @@ from config import settings
 class Container(containers.DeclarativeContainer):
     
     wiring_config = containers.WiringConfiguration(
-        modules=["resources.pingresource",
-                 "resources.helpresource",
-                 "resources.testresource",
-                 "resources.debugidresource",
-                 "resources.deletercdresource",
-                 "resources.configresource",
-                 "resources.queuelengthresource",
-                 "resources.logqueuepopresource",
-                 "resources.logqueuepushresource",
-                 "resources.queuepopresource",
-                 "resources.queuepushresource",
-                 "resources.uid2idresource",
-                 "resources.ordenesresource",
-                 "resources.datalineresource"
+        modules=["resources.ping_resource",
+                 "resources.help_resource",
+                 "resources.test_resource",
+                 "resources.debugid_resource",
+                 "resources.deletercd_resource",
+                 "resources.config_resource",
+                 "resources.logqueuelength_resource",
+                 "resources.logqueuepop_resource",
+                 "resources.logqueuepush_resource",
+                 "resources.dequeuerxlines_resource",
+                 "resources.uid2id_resource",
+                 "resources.ordenes_resource",
+                 "resources.dataline_resource",
+                 "resources.ordenesplc_resource",
+                 "resources.connectionstats_resource",
+                 "resources.rxdataqueuelength_resource",
                  ]
     )
     
@@ -57,6 +61,8 @@ class Container(containers.DeclarativeContainer):
     uid2id_service = providers.Factory(Uid2IdService, repositorio=repo, logger=logger)
     ordenes_service = providers.Factory(OrdenesService, repositorio=repo, logger=logger)
     dataline_service = providers.Factory(DatalineService, repositorio=repo, logger=logger)
+    ordenesplc_service = providers.Factory(OrdenesPlcService, repositorio=repo, logger=logger)
+    connectionstats_service = providers.Factory(ConnectionStatsService, repositorio=repo, logger=logger)
 
 
 

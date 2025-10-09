@@ -1,16 +1,15 @@
 #!/home/pablo/Spymovil/python/proyectos/APICOMMS_2025/.venv/bin/python
 
 import requests
-from ..config import settings
 
-URL = settings.API_URL_BASE + "config"
+URL = "http://127.0.0.1:5100/apiredis/config"
 
 def config_test_get(dlgid="SPQTEST"):
     
     payload = {'unit': dlgid}
     r = requests.get(URL, params=payload)
     jdr = r.json()
-    if jdr['rsp'] == "OK":
+    if r.status_code == 200:
         print("Config Test GET: Response OK")
         print(f"JSON={jdr}")
         return True
@@ -138,7 +137,7 @@ def config_test_put( dlgid="SPQTEST"):
 
     r = requests.put(URL, params=params, json=payload)
     jdr = r.json()
-    if jdr['rsp'] == "OK":
+    if r.status_code == 200:
         print("Config Test PUT: Response OK")
         print(f"JSON={jdr}")
         return True

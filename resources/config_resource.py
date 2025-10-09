@@ -3,9 +3,11 @@
 from flask_restful import Resource, reqparse
 from flask import request
 from dependency_injector.wiring import inject, Provide
-import pickle
+from utilidades.parse_to_dict import parse_to_dict
+
 from container import Container
-from servicios.configservice import ConfigService
+
+from servicios.config_service import ConfigService
 
 
 class ConfigResource(Resource):
@@ -27,8 +29,14 @@ class ConfigResource(Resource):
         unit = args['unit']
 
         d_rsp = self.config_service.read_config(unit)
+        assert isinstance(d_rsp, dict)
 
-        return d_rsp, 200
+        status_code = d_rsp.pop('status_code', 500)
+        # No mando detalles de los errores en respuestas x seguridad.
+        if status_code == 502:
+            _ = d_rsp.pop('msg', '')
+            d_rsp['msg'] = "SERVICIO NO DISPONIBLE TEMPORALMENTE"
+        return d_rsp, status_code
  
     def put(self):
         ''' 
@@ -42,9 +50,19 @@ class ConfigResource(Resource):
         parser.add_argument('unit',type=str,location='args',required=True)
         args=parser.parse_args()
         unit = args['unit']
-        d_params = request.get_json()
+        d_p = request.get_json()
+        
+        d_params = parse_to_dict(d_p)
+        assert isinstance(d_params, dict )
     
         d_rsp = self.config_service.update_config(unit, d_params)
-     
-        return {'rsp':'OK'}, 200         
+        assert isinstance(d_rsp, dict)
+
+        status_code = d_rsp.pop('status_code', 500)
+        # No mando detalles de los errores en respuestas x seguridad.
+        if status_code == 502:
+            _ = d_rsp.pop('msg', '')
+            d_rsp['msg'] = "SERVICIO NO DISPONIBLE TEMPORALMENTE"
+        return d_rsp, status_code      
+
 

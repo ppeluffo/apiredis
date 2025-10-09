@@ -21,7 +21,7 @@ class TestResource(Resource):
                  'VALOR1':1.23,
                  'VALOR2':-34.5}
 
-        return {'rsp':'OK', 'data': data }, 200
+        return {'data': data }, 200
     
     def put(self):
         """
@@ -34,4 +34,4 @@ class TestResource(Resource):
         td = type(d_params)
         self.logger.debug(f"td={td}")
  
-        return {'rsp':'OK'}, 200
+        return {'test':'put_test'}, 200

@@ -5,9 +5,9 @@ from flask import request
 from dependency_injector.wiring import inject, Provide
 import pickle
 from container import Container
-from servicios.queueservice import QueueService
+from servicios.queue_service import QueueService
 
-class QueueLengthResource(Resource):
+class RxDataQueueLengthResource(Resource):
 
     @inject
     def __init__(self, service: QueueService = Provide[Container.queue_service], logger = Provide[Container.logger]):
@@ -20,12 +20,14 @@ class QueueLengthResource(Resource):
         """
         self.logger.debug("")
         
-        parser = reqparse.RequestParser()
-        parser.add_argument('qname',type=str,location='args',required=True)
-        args=parser.parse_args()
-        qname = args['qname']
-
-        d_rsp = self.queue_service.get_length(qname)
-
-        return d_rsp, 200
+        d_rsp = self.queue_service.get_length("RXDATA_QUEUE")
+        assert isinstance(d_rsp, dict)
+        
+        status_code = d_rsp.pop('status_code', 500)
+        # No mando detalles de los errores en respuestas x seguridad.
+        if status_code == 502:
+            _ = d_rsp.pop('msg', '')
+            d_rsp['msg'] = "SERVICIO NO DISPONIBLE TEMPORALMENTE"
+        return d_rsp, status_code 
+    
  

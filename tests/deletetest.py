@@ -2,14 +2,14 @@
 
 import requests
 
-URL = URL = "http://127.0.0.1:5100//apiredis/delete"
+URL = "http://127.0.0.1:5100/apiredis/delete"
 
 def delete_test(dlgid="SPQTEST"):
     
     params = { 'unit':dlgid}
     r = requests.delete(URL, params=params)
     jdr = r.json()
-    if jdr['rsp'] == "OK":
+    if r.status_code == 200:
         print("Delete Test: Response OK")
         print(f"JSON={jdr}")
         return True

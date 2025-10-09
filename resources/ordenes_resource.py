@@ -3,7 +3,7 @@
 from flask_restful import Resource, reqparse
 from dependency_injector.wiring import inject, Provide
 from container import Container
-from servicios.ordenesservice import OrdenesService
+from servicios.ordenes_service import OrdenesService
 
 class OrdenesResource(Resource):
 
@@ -31,8 +31,15 @@ class OrdenesResource(Resource):
         unit = args['unit']
 
         d_rsp = self.ordenes_service.get_ordenes(unit)
-        
-        return d_rsp, 200
+        assert isinstance(d_rsp, dict)
+
+        status_code = d_rsp.pop('status_code', 500)
+        # No mando detalles de los errores en respuestas x seguridad.
+        if status_code == 502:
+            _ = d_rsp.pop('msg', '')
+            d_rsp['msg'] = "SERVICIO NO DISPONIBLE TEMPORALMENTE"
+        return d_rsp, status_code 
+    
    
     def put(self):
         """
@@ -56,8 +63,15 @@ class OrdenesResource(Resource):
         args=parser.parse_args()
         unit = args['unit']
         ordenes = args['ordenes']
-        #
-        d_rsp = self.ordenes_service.set_ordenes(unit, ordenes)
+        assert isinstance(ordenes, str)
         
-        return d_rsp, 200
+        d_rsp = self.ordenes_service.set_ordenes(unit, ordenes)
+        assert isinstance(d_rsp, dict)
+        
+        status_code = d_rsp.pop('status_code', 500)
+        # No mando detalles de los errores en respuestas x seguridad.
+        if status_code == 502:
+            _ = d_rsp.pop('msg', '')
+            d_rsp['msg'] = "SERVICIO NO DISPONIBLE TEMPORALMENTE"
+        return d_rsp, status_code 
     

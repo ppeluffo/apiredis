@@ -3,7 +3,8 @@
 from flask_restful import Resource, reqparse
 from dependency_injector.wiring import inject, Provide
 from container import Container
-from servicios.datalineservice import DatalineService
+from servicios.dataline_service import DatalineService
+from utilidades.parse_to_dict import parse_to_dict
 
 class DatalineResource(Resource):
 
@@ -28,12 +29,24 @@ class DatalineResource(Resource):
         args=parser.parse_args()
         unit = args['unit']
         #
-        d_rsp = self.dataline_service.get_dataline(unit)
+        d_rsp = self.dataline_service.read_dataline(unit)
+        assert isinstance(d_rsp, dict)
         
-        return d_rsp, 200
+        status_code = d_rsp.pop('status_code', 500)
+         # No mando detalles de los errores en respuestas x seguridad.
+        if status_code == 502:
+            _ = d_rsp.pop('msg', '')
+            d_rsp['msg'] = "SERVICIO NO DISPONIBLE TEMPORALMENTE"
+        
+        return d_rsp, status_code 
  
     def put(self):
         """
+        Al recibir un dataline se hacen 3 funciones:
+        - Se guarda en el HSET de la unidad
+        - Se guarda el timestamp en el HSET TIMESTAMP. Este nos permite saber cuando llegaron el ultimo dato de c/unidad
+        - Se guarda en una cola de datos recibidos RXDATA_QUEUE.
+
           Actualiza(override) la ultima linea eviada por la unidad.
             NO CHEQUEA EL FORMATO
             Como es PUT, la configuracion la mandamos en un json { dict_line }
@@ -53,11 +66,19 @@ class DatalineResource(Resource):
         parser.add_argument('type',type=str,location='args',required=True)
         parser.add_argument('dataline',type=str,location='json',required=True)
         args=parser.parse_args()
-        unit = args['unit']
-        unit_type = args['type']
-        d_dataline = args['dataline']
+        unit = args.get('unit','')
+        unit_type = args.get('type','')
+        str_d_dataline = args.get('dataline','')
+        d_dataline = parse_to_dict(str_d_dataline)
+        assert isinstance(d_dataline, dict )
 
-        d_rsp = self.dataline_service.put_dataline(unit, unit_type, d_dataline)
-        
-        return d_rsp, 200
+        d_rsp = self.dataline_service.process_dataline(unit, unit_type, d_dataline)
+        assert isinstance(d_rsp, dict)
+
+        status_code = d_rsp.pop('status_code', 500)
+        # No mando detalles de los errores en respuestas x seguridad.
+        if status_code == 502:
+            _ = d_rsp.pop('msg', '')
+            d_rsp['msg'] = "SERVICIO NO DISPONIBLE TEMPORALMENTE"
+        return d_rsp, status_code 
     

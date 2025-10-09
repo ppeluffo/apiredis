@@ -4,24 +4,26 @@ API REST para acceder a los servicios de REDIS del servidor de comunicaciones
 
 """
 
+
 import logging
 from config import settings
 
-from resources import helpresource
-from resources import pingresource
-from resources import testresource
-from resources import debugidresource
-from resources import deletercdresource
-from resources import configresource
-from resources import queuelengthresource
-from resources import logqueuepopresource
-from resources import logqueuepushresource
-
-from resources import queuepopresource
-from resources import queuepushresource
-from resources import uid2idresource
-from resources import ordenesresource
-from resources import datalineresource
+from resources import help_resource
+from resources import ping_resource
+from resources import test_resource
+from resources import debugid_resource
+from resources import config_resource
+from resources import deletercd_resource
+from resources import ordenes_resource
+from resources import ordenesplc_resource
+from resources import logqueuelength_resource
+from resources import logqueuepop_resource
+from resources import logqueuepush_resource
+from resources import uid2id_resource
+from resources import dataline_resource
+from resources import connectionstats_resource
+from resources import dequeuerxlines_resource
+from resources import rxdataqueuelength_resource
 
 from container import Container
 
@@ -49,26 +51,23 @@ def create_app(gunicorn: bool = False):
     container.init_resources()
     container.wire(modules=[__name__])
 
+    api.add_resource( ping_resource.PingResource, '/apiredis/ping')
+    api.add_resource( help_resource.HelpResource, '/apiredis/help')
+    api.add_resource( test_resource.TestResource, '/apiredis/test')
+    api.add_resource( debugid_resource.DebugIdResource, '/apiredis/debugid')
+    api.add_resource( config_resource.ConfigResource, '/apiredis/config')
+    api.add_resource( deletercd_resource.DeleteRcdResource, '/apiredis/delete')
+    api.add_resource( ordenes_resource.OrdenesResource, '/apiredis/ordenes') 
+    api.add_resource( ordenesplc_resource.OrdenesPlcResource, '/apiredis/ordenesplc')
+    api.add_resource( logqueuelength_resource.LogQueueLengthResource, '/apiredis/logqueuelength') 
+    api.add_resource( logqueuepop_resource.LogQueuePopResource, '/apiredis/logqueuepop')
+    api.add_resource( logqueuepush_resource.LogQueuePushResource, '/apiredis/logqueuepush')
+    api.add_resource( uid2id_resource.Uid2IdResource, '/apiredis/uid2id')
+    api.add_resource( dataline_resource.DatalineResource, '/apiredis/dataline')
+    api.add_resource( connectionstats_resource.ConnectionStatsResource, '/apiredis/connectionstats')
+    api.add_resource( dequeuerxlines_resource.DequeueRxLinesResource, '/apiredis/dequeuerxlines')
+    api.add_resource( rxdataqueuelength_resource.RxDataQueueLengthResource, '/apiredis/rxdataqueuelength')
 
-    api.add_resource( pingresource.PingResource, '/apiredis/ping')
-    api.add_resource( helpresource.HelpResource, '/apiredis/help')
-    api.add_resource( testresource.TestResource, '/apiredis/test')
-    api.add_resource( debugidresource.DebugIdResource, '/apiredis/debugid')
-    api.add_resource( configresource.ConfigResource, '/apiredis/config')
-    api.add_resource( deletercdresource.DeleteRcdResource, '/apiredis/delete')
-    api.add_resource( ordenesresource.OrdenesResource, '/apiredis/ordenes')
-    api.add_resource( queuelengthresource.QueueLengthResource, '/apiredis/queuelength')
-    api.add_resource( logqueuepopresource.LogQueuePopResource, '/apiredis/logqueuepop')
-    api.add_resource( logqueuepushresource.LogQueuePushResource, '/apiredis/logqueuepush')
-    api.add_resource( queuepopresource.QueuePopResource, '/apiredis/queuepop') 
-    api.add_resource( uid2idresource.Uid2IdResource, '/apiredis/uid2id')
-    api.add_resource( datalineresource.DatalineResource, '/apiredis/dataline')
-
-#    api.add_resource( queuepushresource.QueuePushResource, '/apiredis/queuepush')
-#    api.add_resource( OrdenesAtvise, '/apiredis/ordenesatvise')
-#    api.add_resource( LogQueuePop, '/apiredis/logqueuepop')
-#    api.add_resource( LogQueueLength, '/apiredis/logqueuelength')
-#    api.add_resource( Stats, '/apiredis/stats')
 #    
     return app
 

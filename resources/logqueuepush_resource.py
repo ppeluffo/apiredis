@@ -5,9 +5,9 @@ from flask import request
 from dependency_injector.wiring import inject, Provide
 import json
 from container import Container
-from servicios.queueservice import QueueService
+from servicios.queue_service import QueueService
 
-class QueuePushResource(Resource):
+class LogQueuePushResource(Resource):
 
     @inject
     def __init__(self, service: QueueService = Provide[Container.queue_service], logger = Provide[Container.logger]):
@@ -26,15 +26,19 @@ class QueuePushResource(Resource):
         self.logger.debug("")
         
         parser = reqparse.RequestParser()
-        parser.add_argument('qname',type=str,location='args',required=True)
+        parser.add_argument('log_data',type=str,location='json',required=True)
         args=parser.parse_args()
-        qname = args.get('qname', None)
-        #
-        # get_json() convierte el objeto JSON a un python dict !!!
-        jd_params = request.get_json()
-        d_params = json.loads(jd_params)
-        payload = d_params['payload']
+        payload = args.get('log_data', None)
+        assert isinstance(payload, str)
 
-        d_rsp = self.queue_service.push(qname, payload)
+        d_rsp = self.queue_service.rpush("LOG_QUEUE", payload)
+        assert isinstance(d_rsp, dict)
+        
+        status_code = d_rsp.pop('status_code', 500)
+        # No mando detalles de los errores en respuestas x seguridad.
+        if status_code == 502:
+            _ = d_rsp.pop('msg', '')
+            d_rsp['msg'] = "SERVICIO NO DISPONIBLE TEMPORALMENTE"
+        return d_rsp, status_code 
 
-        return d_rsp, 200
+    

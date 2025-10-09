@@ -2,14 +2,14 @@
 
 import requests
 
-URL = URL = "http://127.0.0.1:5100//apiredis/queuelength"
+URL = "http://127.0.0.1:5100/apiredis/queuelength"
 
 def queuelength_test(qname=None):
     
     params = {'qname':qname}
     r = requests.get(URL, params=params)
     jdr = r.json()
-    if jdr['rsp'] == "OK":
+    if r.status_code == 200:
         print("Queue Length Test: Response OK")
         print(f"JSON={jdr}")
         return True

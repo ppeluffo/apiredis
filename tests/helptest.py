@@ -8,7 +8,7 @@ def help_test():
     
     r = requests.get(URL)
     jdr = r.json()
-    if jdr['rsp'] == "OK":
+    if r.status_code == 200:
         print("Help Test: Response OK")
         print(f"JSON={jdr}")
         return True

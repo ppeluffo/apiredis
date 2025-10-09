@@ -5,9 +5,9 @@ from flask import request
 from dependency_injector.wiring import inject, Provide
 import pickle
 from container import Container
-from servicios.queueservice import QueueService
+from servicios.queue_service import QueueService
 
-class QueuePopResource(Resource):
+class DequeueRxLinesResource(Resource):
 
     @inject
     def __init__(self, service: QueueService = Provide[Container.queue_service], logger = Provide[Container.logger]):
@@ -16,19 +16,24 @@ class QueuePopResource(Resource):
 
     def get(self):
         """
-        Devuelve la cantidad count de elementos en la cola qname.
-        Asumimos que la cola SI está pikleada.
+        Devuelve la cantidad count de elementos datalines encolados .
         """
         self.logger.debug("")
         
         parser = reqparse.RequestParser()
-        parser.add_argument('qname',type=str,location='args',required=True)
         parser.add_argument('count',type=str,location='args',required=True)
         args=parser.parse_args()
-        qname = args['qname']
         count = args['count']
 
-        d_rsp = self.queue_service.pop_and_unpickle(qname, count)
-
-        return d_rsp, 200
+        d_rsp = self.queue_service.dequeue_rxlines(count)
+        assert isinstance(d_rsp, dict)
+        
+        status_code = d_rsp.pop('status_code', 500)
+        # No mando detalles de los errores en respuestas x seguridad.
+        if status_code == 502:
+            _ = d_rsp.pop('msg', '')
+            d_rsp['msg'] = "SERVICIO NO DISPONIBLE TEMPORALMENTE"
+        return d_rsp, status_code 
+    
+ 
  

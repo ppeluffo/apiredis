@@ -5,7 +5,8 @@ from flask import request
 from dependency_injector.wiring import inject, Provide
 import pickle
 from container import Container
-from servicios.queueservice import QueueService
+from servicios.queue_service import QueueService
+
 
 class LogQueuePopResource(Resource):
 
@@ -24,10 +25,15 @@ class LogQueuePopResource(Resource):
         parser = reqparse.RequestParser()
         parser.add_argument('count',type=str,location='args',required=True)
         args=parser.parse_args()
-        count = args['count']
+        count = args.get('count',0)
 
-        d_rsp = self.queue_service.pop("LOG_QUEUE", count)
-        #self.logger.debug(f"d_rsp={d_rsp}")
-
-        return d_rsp, 200
+        d_rsp = self.queue_service.lpop("LOG_QUEUE", count)
+        assert isinstance(d_rsp, dict)
+        
+        status_code = d_rsp.pop('status_code', 500)
+        # No mando detalles de los errores en respuestas x seguridad.
+        if status_code == 502:
+            _ = d_rsp.pop('msg', '')
+            d_rsp['msg'] = "SERVICIO NO DISPONIBLE TEMPORALMENTE"
+        return d_rsp, status_code 
  

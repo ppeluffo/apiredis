@@ -3,7 +3,7 @@
 from flask_restful import Resource, reqparse
 from dependency_injector.wiring import inject, Provide
 from container import Container
-from servicios.deletercdservice import DeleteRcdService
+from servicios.deletercd_service import DeleteRcdService
 
 class DeleteRcdResource(Resource):
 
@@ -20,11 +20,15 @@ class DeleteRcdResource(Resource):
         parser = reqparse.RequestParser()
         parser.add_argument('unit',type=str,location='args',required=True)
         args=parser.parse_args()
-        unit = args['unit']
+        unit = args.get('unit','')
 
         d_rsp = self.deletercd_service.delete_unit(unit)
-
-        if d_rsp.get('rsp','ERR') == 'OK':
-            return {'rsp':'OK'}, 200
-        else:
-            return  {'rsp':'ERR'}, 200
+        assert isinstance(d_rsp, dict)
+        
+        status_code = d_rsp.pop('status_code', 500)
+        # No mando detalles de los errores en respuestas x seguridad.
+        if status_code == 502:
+            _ = d_rsp.pop('msg', '')
+            d_rsp['msg'] = "SERVICIO NO DISPONIBLE TEMPORALMENTE"
+        return d_rsp, status_code 
+    

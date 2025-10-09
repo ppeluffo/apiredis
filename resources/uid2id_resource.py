@@ -3,7 +3,7 @@
 from flask_restful import Resource, reqparse
 from dependency_injector.wiring import inject, Provide
 from container import Container
-from servicios.uid2idservice import Uid2IdService
+from servicios.uid2id_service import Uid2IdService
 
 class Uid2IdResource(Resource):
 
@@ -31,8 +31,15 @@ class Uid2IdResource(Resource):
         uid = args['uid']
 
         d_rsp = self.uid2id_service.get_id_from_uid(uid)
-        
-        return d_rsp, 200
+        assert isinstance(d_rsp, dict)
+
+        status_code = d_rsp.pop('status_code', 500)
+        # No mando detalles de los errores en respuestas x seguridad.
+        if status_code == 502:
+            _ = d_rsp.pop('msg', '')
+            d_rsp['msg'] = "SERVICIO NO DISPONIBLE TEMPORALMENTE"
+        return d_rsp, status_code 
+    
         
     def put(self):
         """
@@ -56,6 +63,16 @@ class Uid2IdResource(Resource):
         uid = args['uid']
         id = args['id']
 
+        assert isinstance(uid, str)
+        assert isinstance(id, str)
+
         d_rsp = self.uid2id_service.set_id_and_uid(uid, id)
+        assert isinstance(d_rsp, dict)
         
-        return d_rsp, 200
+        status_code = d_rsp.pop('status_code', 500)
+           # No mando detalles de los errores en respuestas x seguridad.
+        if status_code == 502:
+            _ = d_rsp.pop('msg', '')
+            d_rsp['msg'] = "SERVICIO NO DISPONIBLE TEMPORALMENTE"
+        return d_rsp, status_code 
+    
