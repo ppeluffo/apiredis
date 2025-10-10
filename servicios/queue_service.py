@@ -71,6 +71,7 @@ class QueueService:
         """
         Desencola count elementos de la cola RXDATA_QUEUE
         Los datos de la cola vienen pickeados.
+        Los devuelvo como json
         """
         self.logger.debug("")
 

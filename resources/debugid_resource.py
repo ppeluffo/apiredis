@@ -37,7 +37,7 @@ class DebugIdResource(Resource):
         self.logger.debug("")
         #
         parser = reqparse.RequestParser()
-        parser.add_argument('debugid',type=str,location='json',required=True)
+        parser.add_argument('debugid', type=str ,location='json',required=True)
         args=parser.parse_args()
         debugid = args.get('debugid','DEFAULT')
 
