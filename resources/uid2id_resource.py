@@ -5,6 +5,7 @@ from dependency_injector.wiring import inject, Provide
 from container import Container
 from servicios.uid2id_service import Uid2IdService
 
+
 class Uid2IdResource(Resource):
 
     @inject
@@ -33,13 +34,19 @@ class Uid2IdResource(Resource):
         d_rsp = self.uid2id_service.get_id_from_uid(uid)
         assert isinstance(d_rsp, dict)
 
-        status_code = d_rsp.pop('status_code', 500)
-        # No mando detalles de los errores en respuestas x seguridad.
-        if status_code == 502:
-            _ = d_rsp.pop('msg', '')
-            d_rsp['msg'] = "SERVICIO NO DISPONIBLE TEMPORALMENTE"
-        return d_rsp, status_code 
+        status_code = d_rsp.pop('status_code', 0)
     
+        # No mando detalles de los errores en respuestas x seguridad.
+        if status_code == 200:
+            id = d_rsp.get('id', None)
+            d_rsp = {'id':id }
+        elif status_code == 502:
+            d_rsp = {'msg':"SERVICIO NO DISPONIBLE TEMPORALMENTE"}
+        else:
+            d_rsp = {}
+    
+        return d_rsp, status_code  
+       
         
     def put(self):
         """
@@ -67,12 +74,15 @@ class Uid2IdResource(Resource):
         assert isinstance(id, str)
 
         d_rsp = self.uid2id_service.set_id_and_uid(uid, id)
+        
         assert isinstance(d_rsp, dict)
         
         status_code = d_rsp.pop('status_code', 500)
-           # No mando detalles de los errores en respuestas x seguridad.
+        # No mando detalles de los errores en respuestas x seguridad.
         if status_code == 502:
-            _ = d_rsp.pop('msg', '')
-            d_rsp['msg'] = "SERVICIO NO DISPONIBLE TEMPORALMENTE"
-        return d_rsp, status_code 
+            d_rsp = {'msg':"SERVICIO NO DISPONIBLE TEMPORALMENTE"}
+        else:
+            d_rsp = {}
+    
+        return d_rsp, status_code  
     

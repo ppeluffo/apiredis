@@ -28,7 +28,9 @@ class DeleteRcdResource(Resource):
         status_code = d_rsp.pop('status_code', 500)
         # No mando detalles de los errores en respuestas x seguridad.
         if status_code == 502:
-            _ = d_rsp.pop('msg', '')
-            d_rsp['msg'] = "SERVICIO NO DISPONIBLE TEMPORALMENTE"
+            d_rsp = {'msg': "SERVICIO NO DISPONIBLE TEMPORALMENTE"}
+        else:
+            d_rsp = {}
+            
         return d_rsp, status_code 
     

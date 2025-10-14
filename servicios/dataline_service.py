@@ -12,7 +12,8 @@ class DatalineService:
 
     def read_dataline(self, unit):
         """
-        En la redis la configuracion es un dict serializado. 
+        En la redis la configuracion es un dict pickeado.
+        Aqui lo des-pickleo
         """
         self.logger.debug("")
 

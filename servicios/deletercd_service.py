@@ -12,8 +12,6 @@ class DeleteRcdService:
         """
         self.logger.debug("")
         d_rsp = self.repo.delete_unit(unit)
-        if d_rsp.get('status_code',0) == 200:
-            d_rsp = {'status_code': 200, 'unit': unit}
     
         return d_rsp
     

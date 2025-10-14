@@ -37,3 +37,4 @@ class ConnectionStatsService:
             d_rsp = {'status_code':200, 'ultima_conexion':d_timestamp }
 
         return d_rsp
+

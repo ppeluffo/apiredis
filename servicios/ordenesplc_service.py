@@ -42,8 +42,6 @@ class OrdenesPlcService:
             return d_rsp
         #
         d_rsp = self.repo.set_ordenesplc(unit, pk_ordenes_plc)
-        if d_rsp.get('status_code',0) == 200:
-            d_rsp = {'status_code':200, 'unit': unit}
         
         return d_rsp
 

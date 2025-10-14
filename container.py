@@ -3,7 +3,6 @@
 from dependency_injector import containers, providers
 
 from servicios.ping_service import PingService
-from servicios.debugid_service import DebugIdService
 from servicios.config_service import ConfigService
 from servicios.deletercd_service import DeleteRcdService
 from servicios.ordenes_service import OrdenesService
@@ -12,6 +11,7 @@ from servicios.queue_service import QueueService
 from servicios.uid2id_service import Uid2IdService
 from servicios.dataline_service import DatalineService
 from servicios.connectionstats_service import ConnectionStatsService
+from servicios.loglevel_service import LogLevelService
 
 from repositorios.reporedis import RepoRedis
 
@@ -26,13 +26,8 @@ class Container(containers.DeclarativeContainer):
     wiring_config = containers.WiringConfiguration(
         modules=["resources.ping_resource",
                  "resources.help_resource",
-                 "resources.test_resource",
-                 "resources.debugid_resource",
                  "resources.deletercd_resource",
                  "resources.config_resource",
-                 "resources.logqueuelength_resource",
-                 "resources.logqueuepop_resource",
-                 "resources.logqueuepush_resource",
                  "resources.dequeuerxlines_resource",
                  "resources.uid2id_resource",
                  "resources.ordenes_resource",
@@ -40,6 +35,7 @@ class Container(containers.DeclarativeContainer):
                  "resources.ordenesplc_resource",
                  "resources.connectionstats_resource",
                  "resources.rxdataqueuelength_resource",
+                 "resources.loglevel_resource",
                  ]
     )
     
@@ -54,7 +50,6 @@ class Container(containers.DeclarativeContainer):
     
     # Servicios
     ping_service = providers.Factory(PingService, repositorio=repo, logger=logger)
-    debugid_service = providers.Factory(DebugIdService, repositorio=repo, logger=logger)
     deletercd_service = providers.Factory(DeleteRcdService, repositorio=repo, logger=logger)
     config_service = providers.Factory(ConfigService, repositorio=repo, logger=logger)
     queue_service = providers.Factory(QueueService, repositorio=repo, logger=logger)
@@ -63,6 +58,8 @@ class Container(containers.DeclarativeContainer):
     dataline_service = providers.Factory(DatalineService, repositorio=repo, logger=logger)
     ordenesplc_service = providers.Factory(OrdenesPlcService, repositorio=repo, logger=logger)
     connectionstats_service = providers.Factory(ConnectionStatsService, repositorio=repo, logger=logger)
+    loglevel_service = providers.Factory(LogLevelService, logger=logger)
+
 
 
 

@@ -45,8 +45,6 @@ class ConfigService:
             return d_rsp
 
         d_rsp = self.repo.update_config(unit, pkconfig)
-        if d_rsp.get('status_code',0) == 200:
-            d_rsp = {'status_code':200, 'unit': unit }
 
         return d_rsp
     

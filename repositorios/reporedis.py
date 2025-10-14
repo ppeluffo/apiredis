@@ -1,5 +1,6 @@
 #!/home/pablo/Spymovil/python/proyectos/APICOMMS_2025/.venv/bin/python3
 
+
 class RepoRedis:
     """
     Repositorio que se encarga de consultar la Redis

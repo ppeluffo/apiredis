@@ -13,6 +13,6 @@ API_VERSION = os.environ.get('API_VERSION','R002 @ 2025-09-30')
 LOG_LEVEL = os.environ.get('LOG_LEVEL','INFO')
 
 # API_TESTING
-API_TEST_HOST = "127.0.0.1"
-API_TEST_PORT = "5100"
-API_URL_BASE = f"http://{API_TEST_HOST}:{API_TEST_PORT}/apiredis/"
+#API_TEST_HOST = "127.0.0.1"
+#API_TEST_PORT = "5100"
+#API_URL_BASE = f"http://{API_TEST_HOST}:{API_TEST_PORT}/apiredis/"

@@ -19,5 +19,7 @@ class PingResource(Resource):
         d_rsp = self.ping_service.ping()
 
         status_code = d_rsp.pop('status_code', 500)
+        assert isinstance(d_rsp, dict)
+        
         return d_rsp, status_code
 

@@ -15,9 +15,8 @@ class HelpResource(Resource):
         '''
         self.logger.debug("")
         
-        d_options = {
+        d_rsp = {
             'GET /apiredis/ping': 'Indica el estado de la api.',
-            
             'DELETE /apiredis/delete?unit=DLGID':'Borra la configuracion de la unit',
             'GET /apiredis/debugid': 'Retorna el unitID usado para debug',
             'PUT /apiredis/debugid': 'Setea el unitID usado para debug',
@@ -31,6 +30,5 @@ class HelpResource(Resource):
             'PUT /apiredis/dataline?unit=DLGID': 'Actualiza los datos de ultima linea recibida (json PUT Body) y el timestamp',
             'GET /apiredis/queuelength?qname=<qn>': 'Devuelve el la cantidad de elementos de la cola',
             'GET /apiredis/queueitems?qname=<qn>&<count=nn>':'Devuelve count elementos de la cola',
-
         }
-        return {'d_options': d_options} , 200
+        return d_rsp , 200

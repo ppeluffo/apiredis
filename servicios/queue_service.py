@@ -80,8 +80,7 @@ class QueueService:
         if d_rsp.get('status_code',0) == 200:
 
             l_pk_datastruct = d_rsp['l_pk_datastruct']
-
-            # Des-serializo los elementos de la lista.
+            # Des-serializo los elementos de la lista en otra lista
             try:
                 l_datastruct = [ pickle.loads(element) for element in l_pk_datastruct ]
                 d_rsp = {'status_code':200, 'l_datastruct': l_datastruct }

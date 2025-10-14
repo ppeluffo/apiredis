@@ -27,8 +27,7 @@ class Uid2IdService:
         """
         self.logger.debug("")
         d_rsp = self.repo.set_id_and_uid(uid, id)
-        if d_rsp.get('status_code',0) == 200:
-            d_rsp = {'status_code':200, 'uid': uid}
         
         return d_rsp
+    
 

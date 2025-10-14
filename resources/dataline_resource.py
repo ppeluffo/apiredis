@@ -1,6 +1,7 @@
 #!/home/pablo/Spymovil/python/proyectos/APICOMMS_2025/.venv/bin/python
 
 from flask_restful import Resource, reqparse
+from flask import request
 from dependency_injector.wiring import inject, Provide
 from container import Container
 from servicios.dataline_service import DatalineService
@@ -33,13 +34,17 @@ class DatalineResource(Resource):
         assert isinstance(d_rsp, dict)
         
         status_code = d_rsp.pop('status_code', 500)
-         # No mando detalles de los errores en respuestas x seguridad.
+        d_dataline = d_rsp.get('dataline',{})
+
+        # No mando detalles de los errores en respuestas x seguridad.
         if status_code == 502:
-            _ = d_rsp.pop('msg', '')
-            d_rsp['msg'] = "SERVICIO NO DISPONIBLE TEMPORALMENTE"
-        
-        return d_rsp, status_code 
- 
+            d_rsp = {'msg':"SERVICIO NO DISPONIBLE TEMPORALMENTE"}
+        else:
+            d_rsp = d_dataline
+    
+        return d_rsp, status_code  
+    
+
     def put(self):
         """
         Al recibir un dataline se hacen 3 funciones:
@@ -64,13 +69,13 @@ class DatalineResource(Resource):
         parser = reqparse.RequestParser()
         parser.add_argument('unit',type=str,location='args',required=True)
         parser.add_argument('type',type=str,location='args',required=True)
-        parser.add_argument('dataline',type=str,location='json',required=True)
         args=parser.parse_args()
         unit = args.get('unit','')
         unit_type = args.get('type','')
-        str_d_dataline = args.get('dataline','')
-        d_dataline = parse_to_dict(str_d_dataline)
-        assert isinstance(d_dataline, dict )
+
+        d_p = request.get_json()
+        d_dataline = parse_to_dict(d_p)
+        assert isinstance( d_dataline, dict )
 
         d_rsp = self.dataline_service.process_dataline(unit, unit_type, d_dataline)
         assert isinstance(d_rsp, dict)
@@ -78,7 +83,9 @@ class DatalineResource(Resource):
         status_code = d_rsp.pop('status_code', 500)
         # No mando detalles de los errores en respuestas x seguridad.
         if status_code == 502:
-            _ = d_rsp.pop('msg', '')
-            d_rsp['msg'] = "SERVICIO NO DISPONIBLE TEMPORALMENTE"
+            d_rsp = {'msg':"SERVICIO NO DISPONIBLE TEMPORALMENTE"}
+        else:
+            d_rsp = {}
+    
         return d_rsp, status_code 
     

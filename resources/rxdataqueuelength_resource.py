@@ -19,15 +19,21 @@ class RxDataQueueLengthResource(Resource):
         Devuelve la cantidad de elementos en la cola
         """
         self.logger.debug("")
-        
+
         d_rsp = self.queue_service.get_length("RXDATA_QUEUE")
         assert isinstance(d_rsp, dict)
         
         status_code = d_rsp.pop('status_code', 500)
+    
         # No mando detalles de los errores en respuestas x seguridad.
-        if status_code == 502:
-            _ = d_rsp.pop('msg', '')
-            d_rsp['msg'] = "SERVICIO NO DISPONIBLE TEMPORALMENTE"
+        if status_code == 200:
+            qlength = d_rsp.get('length',0) 
+            d_rsp = {'length': qlength }
+        elif status_code == 502:
+            d_rsp = {'msg':"SERVICIO NO DISPONIBLE TEMPORALMENTE"}
+        else:
+            d_rsp = { }
+    
         return d_rsp, status_code 
     
  

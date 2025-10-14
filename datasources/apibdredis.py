@@ -58,13 +58,10 @@ put_alldata:                         .rpush( 'RXDATA_QUEUE', pk_d_alldata)
 put_timestamp: HSET:                 .hset( 'TIMESTAMP', unit, pk_timestamp )
 
 *******************************************************************************************
-DUDAS:
-1- Quien saca los datos de RXDATA_QUEUE
-2- Quien saca los datos de TIMESTAMP 
+
 
 En las colas, insertamos al final (RPUSH) y sacamos desde adelante (LPOP)
 """
-
 
 import redis
 from config import settings
@@ -88,52 +85,16 @@ class ApiBdRedis:
 
         try:
             self.rh.ping()
-            d_rsp = {'status_code': 200,
-                     'version':settings.API_VERSION,
-                     'REDIS_HOST':settings.BDREDIS_HOST,
-                     'REDIS_PORT': settings.BDREDIS_PORT }
+            ds_rsp = {'status_code': 200,
+                      'version':settings.API_VERSION,
+                      'REDIS_HOST':settings.BDREDIS_HOST,
+                      'REDIS_PORT': settings.BDREDIS_PORT }
         
         except Exception as e:
             self.logger.error( f"Redis Error {e}")
-            d_rsp = {'status_code': 502,  'msg':f"{e}" }
+            ds_rsp = {'status_code': 502,  'msg':f"{e}" }
             
-        return d_rsp
-
-    ########################################################################
-
-    def read_debugid(self):
-        """
-        la respuesta del hget es un binary string o None.
-        """
-        self.logger.debug(f"")
-        try:
-            # Si el hash o la key no existen devuelve None.
-            debug_id = self.rh.hget('SPCOMMS', 'DEBUG_ID')
-            if debug_id is None:
-                d_rsp = {'status_code': 404 }
-            else:
-                d_rsp = {'status_code': 200, 'debugid':debug_id }
-    
-        except Exception as e:
-            self.logger.error( f"Redis Error {e}")
-            d_rsp = {'status_code': 502,  'msg':f"{e}" }
-            return d_rsp
-            
-        return d_rsp
-    
-    def set_debugid(self, debugid=None):
-        """
-        """
-        self.logger.debug(f"")
-        try:
-            _ = self.rh.hset('SPCOMMS', 'DEBUG_ID', debugid )
-            d_rsp = {'status_code': 200}
-        
-        except Exception as e:
-            self.logger.error( f"Redis Error {e}")
-            d_rsp = {'status_code': 502,  'msg':f"{e}" }
-
-        return d_rsp
+        return ds_rsp
 
     ########################################################################
 
@@ -194,7 +155,7 @@ class ApiBdRedis:
             if id is None:
                 d_rsp = {'status_code': 404 }
             else:
-                d_rsp = {'status_code': 200, 'uid': uid, 'id':id }
+                d_rsp = {'status_code': 200, 'id':id }
 
         except Exception as e:
             self.logger.error( f"Redis Error {e}")
@@ -221,6 +182,7 @@ class ApiBdRedis:
 
     def get_ordenes(self, unit=None):
         """
+        Devuelve un string pickeado
         """
         self.logger.debug(f"")
 
@@ -322,7 +284,9 @@ class ApiBdRedis:
         return d_rsp
     
     def save_timestamp(self, unit=None, pk_timestamp=None):
-
+        """
+        Los timestamps se ponen en un hash, con clave la unit, y picleados
+        """
         self.logger.debug(f"")
 
         try:
@@ -351,6 +315,10 @@ class ApiBdRedis:
 
     def read_timestamps(self):
         """
+        Leo todo el hash TIMESTAMP.
+        Las claves son las unit_id
+        Los valores son los timestamps pickeados.
+        La redis me da un diccionario.
         """
         self.logger.debug(f"")
 
@@ -368,7 +336,6 @@ class ApiBdRedis:
         """
         Si la lista no existe, redis devuelve un None.
         Si la lista existe y está vacia, devuelve None.
-        A priori no sabemos si los datos de la lista estan o no pickleados
         """
         self.logger.debug(f"")
 

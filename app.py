@@ -10,20 +10,17 @@ from config import settings
 
 from resources import help_resource
 from resources import ping_resource
-from resources import test_resource
-from resources import debugid_resource
 from resources import config_resource
 from resources import deletercd_resource
 from resources import ordenes_resource
 from resources import ordenesplc_resource
-from resources import logqueuelength_resource
-from resources import logqueuepop_resource
-from resources import logqueuepush_resource
+
 from resources import uid2id_resource
 from resources import dataline_resource
 from resources import connectionstats_resource
 from resources import dequeuerxlines_resource
 from resources import rxdataqueuelength_resource
+from resources import loglevel_resource
 
 from container import Container
 
@@ -51,23 +48,19 @@ def create_app(gunicorn: bool = False):
     container.init_resources()
     container.wire(modules=[__name__])
 
+
     api.add_resource( ping_resource.PingResource, '/apiredis/ping')
     api.add_resource( help_resource.HelpResource, '/apiredis/help')
-    api.add_resource( test_resource.TestResource, '/apiredis/test')
-    api.add_resource( debugid_resource.DebugIdResource, '/apiredis/debugid')
+    api.add_resource( loglevel_resource.LogLevelResource, '/apiredis/loglevel')
     api.add_resource( config_resource.ConfigResource, '/apiredis/config')
     api.add_resource( deletercd_resource.DeleteRcdResource, '/apiredis/delete')
     api.add_resource( ordenes_resource.OrdenesResource, '/apiredis/ordenes') 
     api.add_resource( ordenesplc_resource.OrdenesPlcResource, '/apiredis/ordenesplc')
-    api.add_resource( logqueuelength_resource.LogQueueLengthResource, '/apiredis/logqueuelength') 
-    api.add_resource( logqueuepop_resource.LogQueuePopResource, '/apiredis/logqueuepop')
-    api.add_resource( logqueuepush_resource.LogQueuePushResource, '/apiredis/logqueuepush')
     api.add_resource( uid2id_resource.Uid2IdResource, '/apiredis/uid2id')
     api.add_resource( dataline_resource.DatalineResource, '/apiredis/dataline')
     api.add_resource( connectionstats_resource.ConnectionStatsResource, '/apiredis/connectionstats')
     api.add_resource( dequeuerxlines_resource.DequeueRxLinesResource, '/apiredis/dequeuerxlines')
     api.add_resource( rxdataqueuelength_resource.RxDataQueueLengthResource, '/apiredis/rxdataqueuelength')
-
 #    
     return app
 

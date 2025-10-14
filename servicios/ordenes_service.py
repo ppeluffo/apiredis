@@ -12,6 +12,7 @@ class OrdenesService:
 
     def get_ordenes(self, unit):
         """
+        Recive de la BD un string pickeado y lo desempaquete
         """
         self.logger.debug("")
         d_rsp = self.repo.get_ordenes(unit)
@@ -42,8 +43,6 @@ class OrdenesService:
         #
         d_rsp = self.repo.set_ordenes(unit, pk_ordenes)
         
-        if d_rsp.get('status_code',0) == 200:
-            d_rsp = {'status_code':200, 'unit': unit}
-        
         return d_rsp
+
 
