@@ -61,8 +61,6 @@ class ConfigResource(Resource):
     
         d_rsp = self.config_service.update_config(unit, d_params)
         assert isinstance(d_rsp, dict)
-
-        self.logger.debug(f"d_rsp={d_rsp}")
         
         status_code = d_rsp.pop('status_code', 500)
         # No mando detalles de los errores en respuestas x seguridad.

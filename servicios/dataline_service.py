@@ -51,15 +51,16 @@ class DatalineService:
             return d_rsp
         #
         # pk_dataline: Los datos recibidos se guardan y encolan en forma serializada pickle
+        d_payload = d_dataline.get('dataline',{})
         try:
-            pk_dataline = pickle.dumps(d_dataline)
+            pk_dataline = pickle.dumps(d_payload)
         except Exception as e:
             self.logger.error( f"DatalineService:process_dataline: {e}")
             d_rsp = {'status_code':502, 'msg':f"{e}"}
             return d_rsp
         #
         # pk_datastruct: Estructura de datos serializada que se encola en RXDATA_QUEUE
-        d_datastruct = {'TYPE':unit_type, 'ID':unit, 'D_LINE':d_dataline}
+        d_datastruct = {'TYPE':unit_type, 'ID':unit, 'D_LINE':d_payload}
         try:
             pk_datastruct = pickle.dumps(d_datastruct)
         except Exception as e:
