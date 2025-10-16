@@ -27,8 +27,8 @@ class LogLevelService:
         """
         Devuelve el nivel de log actual (global o por equipo).
         """
-        logger = logging.getLogger('app')
+        logger = logging.getLogger('api-redis')
         current_level = logging.getLevelName(logger.getEffectiveLevel())
-        d_rsp = {'status_code':200, "logger": "app", "current_level": current_level}
+        d_rsp = {'status_code':200, "logger": "api-redis", "current_level": current_level}
         
         return d_rsp

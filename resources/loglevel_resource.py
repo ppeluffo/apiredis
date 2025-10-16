@@ -2,6 +2,7 @@
 
 from flask_restful import Resource, reqparse, request
 from dependency_injector.wiring import inject, Provide
+from utilidades.tolerant_json_load import tolerant_json_load
 from container import Container
 from servicios.loglevel_service import LogLevelService
 
@@ -20,9 +21,24 @@ class LogLevelResource(Resource):
         """
         self.logger.debug("")
 
-        data = request.get_json(force=True)
-        level = data.get("level")
-        timeout = data.get("timeout", None)
+        #data = request.get_json(force=True)
+        # Safe json loads
+        try:
+            raw_body = request.data.decode("utf-8")
+            if not raw_body:
+                return {},400 
+            d_params, reparado = tolerant_json_load(raw_body)
+
+        except Exception as e:
+            self.logger.error( f"{e}")
+            return {}, 400
+
+        if reparado:
+            self.logger.info(f"d_params Reparado JSON !!")    
+        self.logger.debug(f"d_params={d_params}")
+       
+        level = d_params.get("level")
+        timeout = d_params.get("timeout", None)
 
         assert isinstance(level, str)
         assert isinstance(timeout, int)

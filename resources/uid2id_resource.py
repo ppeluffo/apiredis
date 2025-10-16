@@ -1,6 +1,7 @@
 #!/home/pablo/Spymovil/python/proyectos/APICOMMS_2025/.venv/bin/python
 
-from flask_restful import Resource, reqparse
+from flask_restful import Resource, reqparse, request
+from utilidades.tolerant_json_load import tolerant_json_load
 from dependency_injector.wiring import inject, Provide
 from container import Container
 from servicios.uid2id_service import Uid2IdService
@@ -63,13 +64,23 @@ class Uid2IdResource(Resource):
         """
         self.logger.debug("")
         #
-        parser = reqparse.RequestParser()
-        parser.add_argument('uid',type=str,location='json',required=True)
-        parser.add_argument('id',type=str,location='json',required=True)
-        args=parser.parse_args()
-        uid = args['uid']
-        id = args['id']
+        # Safe json loads
+        try:
+            raw_body = request.data.decode("utf-8")
+            if not raw_body:
+                return {},400 
+            d_params, reparado = tolerant_json_load(raw_body)
 
+        except Exception as e:
+            self.logger.error( f"{e}")
+            return {}, 400
+
+        if reparado:
+            self.logger.info(f"d_params Reparado JSON !!")    
+        self.logger.debug(f"d_params={d_params}")
+
+        uid = d_params.get('uid',"")
+        id = d_params.get('id',"")
         assert isinstance(uid, str)
         assert isinstance(id, str)
 

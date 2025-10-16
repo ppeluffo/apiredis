@@ -1,11 +1,11 @@
 #!/home/pablo/Spymovil/python/proyectos/APICOMMS_2025/.venv/bin/python
 
-from flask_restful import Resource, reqparse
+from flask_restful import Resource, reqparse, request
 from flask import request
 from dependency_injector.wiring import inject, Provide
 from container import Container
 from servicios.dataline_service import DatalineService
-from utilidades.parse_to_dict import parse_to_dict
+from utilidades.tolerant_json_load import tolerant_json_load
 
 class DatalineResource(Resource):
 
@@ -73,9 +73,23 @@ class DatalineResource(Resource):
         unit = args.get('unit','')
         unit_type = args.get('type','')
 
-        d_p = request.get_json()
-        d_dataline = parse_to_dict(d_p)
-        assert isinstance( d_dataline, dict )
+        # Safe json loads
+        try:
+            raw_body = request.data.decode("utf-8")
+            if not raw_body:
+                return {},400 
+            d_params, reparado = tolerant_json_load(raw_body)
+
+        except Exception as e:
+            self.logger.error( f"{e}")
+            return {}, 400
+
+        if reparado:
+            self.logger.info(f"d_params Reparado JSON !!")    
+        self.logger.debug(f"d_params={d_params}")
+
+        d_dataline = d_params
+        assert isinstance(d_dataline, dict )
 
         d_rsp = self.dataline_service.process_dataline(unit, unit_type, d_dataline)
         assert isinstance(d_rsp, dict)
@@ -88,4 +102,5 @@ class DatalineResource(Resource):
             d_rsp = {}
     
         return d_rsp, status_code 
+    
     

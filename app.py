@@ -48,7 +48,6 @@ def create_app(gunicorn: bool = False):
     container.init_resources()
     container.wire(modules=[__name__])
 
-
     api.add_resource( ping_resource.PingResource, '/apiredis/ping')
     api.add_resource( help_resource.HelpResource, '/apiredis/help')
     api.add_resource( loglevel_resource.LogLevelResource, '/apiredis/loglevel')
@@ -70,7 +69,7 @@ if __name__ != '__main__':
     app = create_app(gunicorn=True)
     app.logger.handlers = gunicorn_logger.handlers
     app.logger.setLevel(gunicorn_logger.level)
-    app.logger.info(f'Starting APIREDIS: REDIS_HOST={settings.BDREDIS_HOST}, REDIS_PORT={settings.BDREDIS_PORT}')
+    app.logger.info(f'Starting APIREDIS: REDIS_HOST={settings.BDREDIS_HOST}, REDIS_PORT={settings.BDREDIS_PORT}, LOGLEVEL={settings.LOG_LEVEL}')
 
 
 # Lineas para cuando corre en modo independiente

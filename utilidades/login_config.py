@@ -16,10 +16,10 @@ def set_log_level(level=None, timeout=60):
     if level not in ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]:
         raise ValueError(f"Nivel inválido: {level}")
 
-    logger = logging.getLogger('app')
+    logger = logging.getLogger('api-redis')
     logger.setLevel(getattr(logging, level))
 
-    print(f"[LOGGER] Nivel revertido a {level}")
+    print(f"[LOGGER] Nivel modificado a {level}")
 
     # Si hay timeout, crear un hilo que lo revierta
     if timeout and timeout > 0:
@@ -36,12 +36,12 @@ def _revert_after_timeout(timeout):
     Espera 'timeout' segundos y revierte el nivel a INFO.
     """
     time.sleep(timeout)
-    logger = logging.getLogger('app')
+    logger = logging.getLogger('api-redis')
     logger.setLevel(logging.INFO)
 
     print(f"[LOGGER] Nivel revertido automáticamente a INFO después de {timeout} s")
 
-def configure_logger(name: str = "app", gunicorn: bool = False) -> logging.Logger:
+def configure_logger(name: str = "api-redis", gunicorn: bool = False) -> logging.Logger:
     
     logger = logging.getLogger(name)
     
@@ -49,6 +49,7 @@ def configure_logger(name: str = "app", gunicorn: bool = False) -> logging.Logge
     #logger.setLevel(logging.INFO)
     #log_level = os.getenv("LOG_LEVEL", "INFO").upper()
     log_level = settings.LOG_LEVEL.upper()
+    print(f"LOG LEVEL = {log_level}")
     logger.setLevel(getattr(logging, log_level, logging.INFO))
 
     # Si la app corre bajo gunicorn → reutilizamos sus handlers

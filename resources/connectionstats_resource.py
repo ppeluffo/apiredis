@@ -4,7 +4,6 @@ from flask_restful import Resource, reqparse
 from dependency_injector.wiring import inject, Provide
 from container import Container
 from servicios.connectionstats_service import ConnectionStatsService
-from utilidades.parse_to_dict import parse_to_dict
 
 class ConnectionStatsResource(Resource):
 

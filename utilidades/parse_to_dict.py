@@ -2,6 +2,7 @@
 
 import json
 import ast
+from flask import Flask, request, jsonify
 
 """
 Muchas veces el json que viene en un request no tiene el formato adecuado, por
@@ -25,3 +26,5 @@ def parse_to_dict(raw_value):
         except (ValueError, SyntaxError):
             return {}
         
+
+    

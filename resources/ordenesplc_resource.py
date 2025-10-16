@@ -1,7 +1,8 @@
 #!/home/pablo/Spymovil/python/proyectos/APICOMMS_2025/.venv/bin/python
 
-from flask_restful import Resource, reqparse
+from flask_restful import Resource, reqparse, request
 from dependency_injector.wiring import inject, Provide
+from utilidades.tolerant_json_load import tolerant_json_load
 from container import Container
 from servicios.ordenesplc_service import OrdenesPlcService
 
@@ -57,12 +58,28 @@ class OrdenesPlcResource(Resource):
         """
         self.logger.debug("")
         
+        # Solo leo de args. Del json body uso el bloque faul tolerant
         parser = reqparse.RequestParser()
         parser.add_argument('unit',type=str,location='args',required=True)
-        parser.add_argument('ordenes_atvise',type=str,location='json',required=True)
         args=parser.parse_args()
         unit = args['unit']
-        ordenes_plc = args['ordenes_atvise']
+
+        # Safe json loads
+        try:
+            raw_body = request.data.decode("utf-8")
+            if not raw_body:
+                return {},400 
+            d_params, reparado = tolerant_json_load(raw_body)
+
+        except Exception as e:
+            self.logger.error( f"{e}")
+            return {}, 400
+
+        if reparado:
+            self.logger.info(f"d_params Reparado JSON !!")    
+        self.logger.debug(f"d_params={d_params}")
+
+        ordenes_plc = d_params.get('ordenes_atvise',"")
         assert isinstance(ordenes_plc, str)
 
         d_rsp = self.ordenes_service.set_ordenesplc(unit, ordenes_plc)

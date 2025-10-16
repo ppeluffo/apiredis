@@ -3,8 +3,7 @@
 from flask_restful import Resource, reqparse
 from flask import request
 from dependency_injector.wiring import inject, Provide
-from utilidades.parse_to_dict import parse_to_dict
-
+from utilidades.tolerant_json_load import tolerant_json_load
 from container import Container
 
 from servicios.config_service import ConfigService
@@ -40,6 +39,7 @@ class ConfigResource(Resource):
         else:
             d_rsp = d_config
 
+        self.logger.debug(f"d_rsp={d_rsp}")
         return d_rsp, status_code
  
     def put(self):
@@ -54,9 +54,21 @@ class ConfigResource(Resource):
         parser.add_argument('unit',type=str,location='args',required=True)
         args=parser.parse_args()
         unit = args['unit']
-        d_p = request.get_json()
-        
-        d_params = parse_to_dict(d_p)
+        # Safe json loads
+        try:
+            raw_body = request.data.decode("utf-8")
+            if not raw_body:
+                return {},400 
+            d_params, reparado = tolerant_json_load(raw_body)
+
+        except Exception as e:
+            self.logger.error( f"{e}")
+            return {}, 400
+
+        if reparado:
+            self.logger.info(f"d_params Reparado JSON !!")    
+        self.logger.debug(f"d_params={d_params}")
+       
         assert isinstance(d_params, dict )
     
         d_rsp = self.config_service.update_config(unit, d_params)
@@ -70,5 +82,6 @@ class ConfigResource(Resource):
             d_rsp = {}
     
         return d_rsp, status_code      
+
 
 
