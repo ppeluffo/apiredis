@@ -20,7 +20,7 @@ class OrdenesPlcService:
             pk_ordenes_plc = d_rsp['pk_ordenes_plc']
             try:
                 pk_ordenes_plc = pickle.loads(pk_ordenes_plc) 
-                d_rsp = {'status_code':200, 'ordenes':pk_ordenes_plc}
+                d_rsp = {'status_code':200, 'ordenes_plc':pk_ordenes_plc}
                 
             except Exception as e:
                 self.logger.error( f"OrdenesPlcService:get_ordenesplc: {e}")
@@ -45,3 +45,9 @@ class OrdenesPlcService:
         
         return d_rsp
 
+    def delete_ordenesplc(self, unit=None):
+        """
+        """
+        self.logger.debug("")
+
+        return self.repo.delete_ordenesplc(unit)      

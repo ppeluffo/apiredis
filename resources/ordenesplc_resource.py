@@ -34,14 +34,13 @@ class OrdenesPlcResource(Resource):
         assert isinstance(d_rsp, dict)
 
         status_code = d_rsp.pop('status_code', 500)
-        ordenes = d_rsp.get('ordenes',"")
+        ordenes_plc = d_rsp.get('ordenes_plc',{})
 
         # No mando detalles de los errores en respuestas x seguridad.
         if status_code == 502:
             d_rsp = {'msg':"SERVICIO NO DISPONIBLE TEMPORALMENTE"}
         else:
-            ordenes 
-            d_rsp = {"ordenes": ordenes }
+            d_rsp = ordenes_plc
             
         return d_rsp, status_code 
       
@@ -80,9 +79,10 @@ class OrdenesPlcResource(Resource):
         self.logger.debug(f"d_params={d_params}")
 
         ordenes_plc = d_params.get('ordenes_atvise',"")
-        assert isinstance(ordenes_plc, str)
+        assert isinstance(ordenes_plc, dict)
+        self.logger.debug(f"ordenes_plc={ordenes_plc}")
 
-        d_rsp = self.ordenes_service.set_ordenesplc(unit, ordenes_plc)
+        d_rsp = self.ordenesplc_service.set_ordenesplc(unit, ordenes_plc)
         assert isinstance(d_rsp, dict)
 
         status_code = d_rsp.pop('status_code', 500)
@@ -94,3 +94,25 @@ class OrdenesPlcResource(Resource):
 
         return d_rsp, status_code 
     
+    def delete(self):
+        """
+        """
+        self.logger.debug("")
+
+        parser = reqparse.RequestParser()
+        parser.add_argument('unit',type=str,location='args',required=True)
+        args=parser.parse_args()
+        unit = args['unit']
+
+        d_rsp = self.ordenesplc_service.delete_ordenesplc(unit)
+        assert isinstance(d_rsp, dict)
+
+        self.logger.debug(f"d_rsp={d_rsp}")
+
+        status_code = d_rsp.pop('status_code', 500)
+
+        # No mando detalles de los errores en respuestas x seguridad.
+        if status_code == 502:
+            d_rsp = {'msg':"SERVICIO NO DISPONIBLE TEMPORALMENTE"}
+            
+        return d_rsp, status_code

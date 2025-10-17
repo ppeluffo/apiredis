@@ -214,6 +214,21 @@ class ApiBdRedis:
         #
         return d_rsp
     
+    def delete_ordenes(self, unit=None):
+        """
+        """
+        self.logger.debug(f"")
+
+        try:
+            _ = self.rh.hdel(unit, 'PKORDENES' )
+            d_rsp = {'status_code': 200}
+
+        except Exception as e:
+            self.logger.error( f"Redis Error {e}")
+            d_rsp = {'status_code': 502,  'msg':f"{e}" }
+        #
+        return d_rsp
+          
     def get_ordenesplc(self, unit=None):
         """
         """
@@ -239,6 +254,21 @@ class ApiBdRedis:
 
         try:
             _ = self.rh.hset(unit, 'PKATVISE', pk_ordenes_plc )
+            d_rsp = {'status_code': 200}
+
+        except Exception as e:
+            self.logger.error( f"Redis Error {e}")
+            d_rsp = {'status_code': 502,  'msg':f"{e}" }
+        #
+        return d_rsp
+    
+    def delete_ordenesplc(self, unit=None):
+        """
+        """
+        self.logger.debug(f"")
+
+        try:
+            _ = self.rh.hdel(unit, 'PKATVISE' )
             d_rsp = {'status_code': 200}
 
         except Exception as e:

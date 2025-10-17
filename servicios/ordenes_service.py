@@ -45,4 +45,9 @@ class OrdenesService:
         
         return d_rsp
 
+    def delete_ordenes(self, unit=None):
+        """
+        """
+        self.logger.debug("")
 
+        return self.repo.delete_ordenes(unit)

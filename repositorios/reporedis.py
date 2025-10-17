@@ -100,6 +100,12 @@ class RepoRedis:
         self.logger.debug("")
         return self.datasource.set_ordenes(unit, pk_ordenes)
     
+    def delete_ordenes(self, unit=None):
+        """
+        """
+        self.logger.debug("")
+        return self.datasource.delete_ordenes(unit)
+    
     def read_dataline(self, unit=None):
         """
         """
@@ -148,4 +154,8 @@ class RepoRedis:
         self.logger.debug("")
         return self.datasource.set_ordenesplc(unit, pk_ordenes_plc)
     
-    
+    def delete_ordenesplc(self, unit=None ):
+        """
+        """
+        self.logger.debug("")
+        return self.datasource.delete_ordenesplc(unit)
